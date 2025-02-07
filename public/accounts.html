@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            background-color: #007bff;
+            color: white;
+            margin: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .stand-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .stand-buttons button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+
+        .stand-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        .section {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #007bff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            color: #555;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #f1f1f1;
+        }
+
+        .net-amount-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff3cd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .net-amount-section h3 {
+            color: #ff8800;
+        }
+
+        .net-amount-section .amount-field {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Accounts</h1>
+
+    <button class="back-btn" onclick="window.history.back()">Back</button>
+
+    <!-- Stand Buttons for Filtering -->
+    <div class="stand-buttons">
+        <button onclick="filterData('all')">All</button>
+        <button onclick="filterData('Stand-1')">Stand 1</button>
+        <button onclick="filterData('Stand-2')">Stand 2</button>
+        <button onclick="filterData('Stand-3')">Stand 3</button>
+        <button onclick="filterData('Stand-4')">Stand 4</button>
+    </div>
+
+    <!-- Online Billing Section -->
+    <div class="section">
+        <h2>Online Billing</h2>
+        <table id="onlineBillingTable">
+            <thead>
+                <tr>
+                    <th>Token No</th>
+					<th>Stand</th>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Payment Mode</th>
+                    <th>Final Payment Mode</th>
+                    <th>Amount</th>
+                    <th>Amount Received</th>
+                    <th>Amount Returned</th>
+                </tr>
+            </thead>
+            <tbody id="onlineBillingTableBody"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="7" style="text-align: right;">Total</td>
+                    <td id="onlineTotalReceived"></td>
+                    <td id="onlineTotalReturned"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- Offline Billing Section -->
+    <div class="section">
+        <h2>Offline Billing</h2>
+        <table id="offlineBillingTable">
+            <thead>
+                <tr>
+                    <th>Token No</th>
+					<th>Stand</th>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Payment Mode</th>
+                    <th>Final Payment Mode</th>
+                    <th>Amount</th>
+                    <th>Amount Received</th>
+                    <th>Amount Returned</th>
+                </tr>
+            </thead>
+            <tbody id="offlineBillingTableBody"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="7" style="text-align: right;">Total</td>
+                    <td id="offlineTotalReceived"></td>
+                    <td id="offlineTotalReturned"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- Net Amount Section -->
+    <div class="net-amount-section">
+        <h3>Net Amount Online</h3>
+        <div class="amount-field">
+            <span>Security + Amount Received (Online):</span>
+            <span id="securityOnline"></span>
+        </div>
+        <div class="amount-field">
+            <span>Total Returned Amount:</span>
+            <span id="totalOnlineBilling"></span>
+        </div>
+        <div class="amount-field">
+            <span>Net:</span>
+            <span id="netOnlineAmount"></span>
+        </div>
+    </div>
+
+    <div class="net-amount-section">
+        <h3>Net Amount Offline</h3>
+        <div class="amount-field">
+            <span>Security + Amount Received (Offline):</span>
+            <span id="securityOffline"></span>
+        </div>
+        <div class="amount-field">
+            <span>Total Returned Amount:</span>
+            <span id="totalOfflineBilling"></span>
+        </div>
+        <div class="amount-field">
+            <span>Net:</span>
+            <span id="netOfflineAmount"></span>
+        </div>
+    </div>
+
+    <script>
+        let selectedStand = 'all';  // Default filter
+
+        let onlineSecurity = 0;
+        let offlineSecurity = 0;
+        let onlineTotalReceived = 0;
+        let onlineTotalReturned = 0;
+        let offlineTotalReceived = 0;
+        let offlineTotalReturned = 0;
+
+        // Function to handle stand filter change
+        function filterData(stand) {
+            selectedStand = stand;
+            fetchAccountsData();  // Fetch data based on selected stand
+        }
+
+        async function fetchAccountsData() {
+            try {
+                const response = await fetch('/getAllData');
+                const data = await response.json();
+				onlineSecurity = 0;
+				offlineSecurity = 0;
+                onlineTotalReceived = 0;
+                onlineTotalReturned = 0;
+                offlineTotalReceived = 0;
+                offlineTotalReturned = 0;
+
+                const onlineTableBody = document.getElementById('onlineBillingTableBody');
+                const offlineTableBody = document.getElementById('offlineBillingTableBody');
+                onlineTableBody.innerHTML = '';  // Clear previous data
+                offlineTableBody.innerHTML = '';  // Clear previous data
+
+                data.forEach(item => {
+                    // Filter data based on selected stand
+                    if (selectedStand !== 'all' && item.stand !== selectedStand) {
+                        return;  // Skip this item if it doesn't match the selected stand
+                    }
+
+                    // Amount Received & Amount Returned based on Final Payment Mode
+                    let amountReceived = 0;
+                    let amountReturned = 0;
+                    const securityAmount = item.securityAmount ?? 0;
+                    const finalBill = item.finalBill ?? 0;
+
+                    // Calculating Amount Received and Amount Returned based on Final Payment Mode
+                    if (finalBill > 0) {
+                          // Amount received is based on final bill
+                        if (securityAmount > finalBill) {
+                            amountReturned = securityAmount - finalBill; // Security greater than final bill is returned
+                        }
+						else {
+						amountReceived = finalBill-securityAmount;
+						}
+                    }
+
+                    // **Security Amount Calculation based on Payment Mode**
+                    if (item.paymentMode === 'Online') {
+                        onlineSecurity += securityAmount;
+                    } else if (item.paymentMode === 'Offline') {
+                        offlineSecurity += securityAmount;
+                    }
+
+                    // Append data to tables
+                    if (item.finalPaymentMode === 'online') {
+                        onlineTableBody.innerHTML += `
+                            <tr>
+                                <td>${item.tokenNo}</td>
+								<td>${item.stand}</td>
+                                <td>${item.name}</td>
+                                <td>${item.mobile}</td>
+                                <td>${item.paymentMode}</td>
+                                <td>${item.finalPaymentMode}</td>
+                                <td>${finalBill}</td>
+                                <td>${amountReceived}</td>
+                                <td>${amountReturned}</td>
+                            </tr>`;
+                        onlineTotalReceived += amountReceived;
+                        onlineTotalReturned += amountReturned;
+                    } else if (item.finalPaymentMode === 'offline') {
+                        offlineTableBody.innerHTML += `
+                            <tr>
+                                <td>${item.tokenNo}</td>
+								<td>${item.stand}</td>
+                                <td>${item.name}</td>
+                                <td>${item.mobile}</td>
+                                <td>${item.paymentMode}</td>
+                                <td>${item.finalPaymentMode}</td>
+                                <td>${finalBill}</td>
+                                <td>${amountReceived}</td>
+                                <td>${amountReturned}</td>
+                            </tr>`;
+                        offlineTotalReceived += amountReceived;
+                        offlineTotalReturned += amountReturned;
+                    }
+                });
+
+                // Update totals and net amount for Online and Offline
+                document.getElementById('onlineTotalReceived').innerText = onlineTotalReceived;
+                document.getElementById('onlineTotalReturned').innerText = onlineTotalReturned;
+                document.getElementById('offlineTotalReceived').innerText = offlineTotalReceived;
+                document.getElementById('offlineTotalReturned').innerText = offlineTotalReturned;
+
+                // Update the security and net amounts
+                document.getElementById('securityOnline').innerText = onlineSecurity;
+                document.getElementById('securityOffline').innerText = offlineSecurity;
+
+                document.getElementById('totalOnlineBilling').innerText = onlineTotalReturned;
+                document.getElementById('totalOfflineBilling').innerText = offlineTotalReturned;
+
+                document.getElementById('netOnlineAmount').innerText = (onlineSecurity + onlineTotalReceived) - onlineTotalReturned;
+                document.getElementById('netOfflineAmount').innerText = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        // Initialize data fetch
+        fetchAccountsData();
+    </script>
+
+</body>
+
+</html>
